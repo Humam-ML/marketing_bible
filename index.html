@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Higen Marketing Bible</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      background: #0b2545;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #1c2b36;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 32px 28px;
+      width: 320px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .card .brand {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #0f7d84;
+      margin-bottom: 6px;
+    }
+    .card h1 {
+      font-family: Cambria, Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #0b2545;
+      margin-bottom: 6px;
+    }
+    .card .sub {
+      font-size: 11px;
+      color: #5c6b73;
+      margin-bottom: 24px;
+    }
+    .card input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1.5px solid #dbe4e8;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .card input:focus {
+      outline: none;
+      border-color: #0f7d84;
+    }
+    .card button {
+      width: 100%;
+      padding: 12px;
+      background: #0f7d84;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .card button:active {
+      background: #0b2545;
+    }
+    .error {
+      color: #e07a2c;
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+    .footer-text {
+      margin-top: 20px;
+      font-size: 11px;
+      color: #5c6b73;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">Higen Pharma</div>
+    <h1>Marketing Bible</h1>
+    <div class="sub">Please sign in to continue</div>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" required autocomplete="username">
+      <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+      <button type="submit">Sign in</button>
+    </form>
+    <div class="error" id="errorMsg">Invalid username or password</div>
+    <div class="footer-text">Prepared by Mustafa Al Hashimi</div>
+  </div>
+
+  <!-- Supabase client (load once) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    (function() {
+      // 🔐 Your Supabase credentials
+      const SUPABASE_URL = 'https://dbdbmbtveftcxcnmqobs.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRiZGJtYnR2ZWZ0Y3hjbm1xb2JzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3OTg0OTUsImV4cCI6MjA5NTM3NDQ5NX0.k9EugAVx97AlWFpPdy5xNqsqA7WrhamHZVIs-Rqt3J0';
+
+      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const form = document.getElementById('loginForm');
+      const errorMsg = document.getElementById('errorMsg');
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        errorMsg.style.display = 'none';
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        const { data, error } = await supabaseClient
+          .from('marketing_bible_users')
+          .select('*')
+          .eq('username', username)
+          .eq('password', password)
+          .maybeSingle();
+
+        if (error || !data) {
+          errorMsg.style.display = 'block';
+          return;
+        }
+
+        // Login success
+        localStorage.setItem('higen_logged_in', 'true');
+        localStorage.setItem('higen_user', data.name || username);
+        window.location.href = 'main.html';
+      });
+    })();
+  </script>
+</body>
+</html>
